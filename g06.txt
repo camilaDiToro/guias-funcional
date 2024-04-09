@@ -1,0 +1,199 @@
+-------------------------------------------------------
+---                 Ejercicio 5                     ---
+-------------------------------------------------------
+-------------------------------------------------------
+---  a) para todo ​ f​. ​ curry (uncurry ​ f​) ​ =​ ​ f 
+-------------------------------------------------------
+Sea f :: a -> b -> c una función cualquiera
+
+Por principio de extensionalidad, 
+∀x. 
+    curry (uncurry f) x = f x
+
+Por principio de extensionalidad, 
+∀x. ∀y. 
+    curry (uncurry f) x y = f x y
+
+Sean x::a e y::b elementos cualquiera
+curry (uncurry f) x y = f x y
+
+    curry (uncurry f) x y
+=                               (def curry) 
+    uncurry f (x,y)
+=                               (def uncurry)
+    f x y
+                                                ■
+
+-------------------------------------------------------
+--- b) para todo ​ f'​. ​ uncurry (curry ​ f'​) ​ =​ ​ f'
+-------------------------------------------------------
+Sea f :: a -> b -> c una función cualquiera
+
+Por principio de extensionalidad, 
+∀x. ∀y. ​ 
+    uncurry (curry ​ f'​) (x,y) ​ =​ ​ f' (x,y)
+
+Sean x::a e y::b elementos cualquiera
+uncurry (curry ​ f'​) (x,y) ​ =​ ​ f' (x,y)
+
+    uncurry (curry ​ f'​) (x,y)
+=                                  (def uncurry)
+    curry ​ f' x y 
+=                                  (def curry)
+    f' (x,y)
+                                                ■
+
+
+
+-------------------------------------------------------
+---                 Ejercicio 6                     ---
+-------------------------------------------------------
+Dadas las siguientes definiciones
+
+assoc :: (a,(b,c)) -> ((a,b),c)
+assoc (x,(y,z)) = ((x,y),z)
+
+appAssoc :: (((a,b),c) -> d) -> (a,(b,c)) -> d
+appAssoc f p = f (assoc p)
+
+demostrar la siguiente propiedad:
+para todo ​ f​.
+    ​appAssoc (uncurry (uncurry ​ f​)) ​ =​ uncurry (compose uncurry ​ f​)
+-------------------------------------------------------
+
+Sea f :: a -> b -> c una función cualquiera
+
+Por principio de extensionalidad, 
+∀x. ∀y. ∀z.
+    ​appAssoc (uncurry (uncurry ​ f​)) (x, (y,z))​ =​ uncurry (compose uncurry ​ f​) (x, (y,z))
+
+Sean x::a, y::b y z::c elementos cualquiera
+
+    appAssoc (uncurry (uncurry ​ f​)) (x, (y,z))
+=                                                   (def appAssoc)
+    uncurry (uncurry ​ f​) (assoc (x, (y,z)))
+=                                                   (def assoc)
+    uncurry (uncurry ​ f​) ((x, y),z)
+=                                                   (def uncurry)
+    uncurry f (x,y) z
+=                                                   (def uncurry)
+    f x y z
+=                                                   (def uncurry)
+    uncurry (f x) (y,z)
+=                                                   (def compose)
+    compose uncurry ​f x (y,z)
+=                                                   (def uncurry)
+    uncurry (compose uncurry​ f​) (x, (y,z))
+
+                                                                    ■
+
+
+-------------------------------------------------------
+---                 Ejercicio 7                     ---
+-------------------------------------------------------
+Dada la siguiente definición 
+    (f . g) x = f (g x)
+-------------------------------------------------------
+
+a. definir las siguientes funciones utilizando el operador ​ 
+(.) y la menor cantidad de parámetros posible:
+
+i. cuadruple = doble . doble
+
+ii. doble = (2 *)
+
+iii. twice = (f . f)
+
+iv. many
+
+def de many:
+many 0 f x = x
+many n f x = f (many (n-1) f x)
+
+def de many sin parámetros (de la práctica 3):
+many 0 = const id
+many n = subst compose (many (n-1))
+
+usando (.)
+many 0 = const id
+many n = subst (many (n-1) .)
+
+-------------------------------------------------------
+
+b. demostrar las siguientes propiedades:
+
+i. para todo ​ f​. para todo ​ g​. ​ f​ .​ g​ ​ =​ compose ​ f​ ​ 
+
+Por principio de extensionalidad, 
+∀x. 
+    (f . g) x = compose f x
+
+
+    (f . g) x 
+=                   (def .)
+    f (g x)
+=                   (def compose)
+    compose f x
+
+                                                ■
+
+ii. swap . swap ​ =​ id
+
+iii. para todo ​ f​. para todo ​ g​. para todo ​ h​.
+    ​f​ . (​g​ . ​ h​) ​ =​ (​f​ . ​ g​) . ​ h
+
+iv. curry . uncurry ​ =​ id
+
+v. para todo ​ f​. ​ appAssoc ​ f​ ​ =​ ​ f​ . assoc
+
+-------------------------------------------------------
+
+c. demostrar las siguientes propiedades solamente mediante 
+otras propiedades ya demostradas (sin utilizar el principio 
+de extensionalidad ni las definiciones de las funciones 
+directamente):
+
+i. doble . doble ​ =​ cuadruple (ej 7.a.i ?)
+
+ii. para todo ​ f'​. ​ 
+    curry (uncurry (curry ​ f'​)) ​ =​ curry ​ f'
+
+Sea f':: (a,b)->c
+
+    curry (uncurry (curry ​ f'​))
+=                               (ej 5)
+    curry ​ f'
+                                                        ■
+
+iii. para todo ​ f​. ​ 
+    appAssoc (uncurry (uncurry ​ f​)) =​ (uncurry . uncurry) ​ f​ . assoc
+
+Sea f :: a -> b -> c una función cualquiera
+
+    appAssoc (uncurry (uncurry ​ f​))
+              ───────  ───────  ─
+                 f        g     x
+=                                           (def .)
+    appAssoc ((uncurry . uncurry) ​ f)
+              ───────────────────────
+                        f
+=                                           (ej 7.b.v)
+    (uncurry . uncurry) ​ f . assoc 
+                                                        ■
+
+iv. para todo ​ f​. ​ 
+    (uncurry . uncurry) ​ f​ . assoc =​ uncurry (uncurry . ​ f​)
+
+Sea f :: a -> b -> c una función cualquiera
+    
+    (uncurry . uncurry) ​ f​ . assoc
+=                                       (def .)
+    uncurry (uncurry f) . assoc
+=                                       (ej 7.b.v)
+    appAssoc (uncurry (uncurry f))
+=                                       (ej 6)
+    uncurry (compose uncurry ​ f​)
+=                                       (ej 7.b.i)
+    uncurry (uncurry . ​ f​)
+
+                                                        ■
